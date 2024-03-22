@@ -17,7 +17,17 @@ class Class_Maker{
 class Variable_Maker{
     String variable_In_Lines(String input_Line){
         int semi_Positon=input_Line.indexOf(":");
-        return input_Line.substring(semi_Positon+2,input_Line.length());
+        if (input_Line.charAt(semi_Positon+2)=='+'){
+            return "    public "+input_Line.substring(semi_Positon+2+1,input_Line.length())+";";// +2==(-or+)
+        }
+        else{
+            return "    private "+input_Line.substring(semi_Positon+2+1,input_Line.length())+";";// +2==(-or+)
+        }
+    }
+}
+class Method_Maker{
+    String method_In_Lines(String input_Line){
+        return "here is a method"; //fix later
     }
 }
 
@@ -44,6 +54,8 @@ public class CodeGenerator{
         try {
             ////files operation
             Class_Maker class_maker=new Class_Maker();
+            Variable_Maker variable_maker=new Variable_Maker();
+            Method_Maker method_maker= new Method_Maker();
             BufferedReader reader = new BufferedReader(new FileReader(args[0]));
             ArrayList<String> string_List=new ArrayList<String>(); 
 
@@ -77,7 +89,21 @@ public class CodeGenerator{
                     bw.write("\n");
                     System.out.println("there is a class");
                 }
+                else if(string_List.get(i).contains("(")){ //find method first and then variables,buz they are almost same
+                    String method_line=method_maker.method_In_Lines(string_List.get(i));
+                    bw.write(method_line);
+                    bw.write("\n");
+                    System.out.println("there is a method");
+                }
+                else{//except for class and methods,(e.g.variable,array),deal with the same way.
+                    String variable_line=variable_maker.variable_In_Lines(string_List.get(i));
+                    bw.write(variable_line);
+                    bw.write("\n");
+                    System.out.println("there is a variable");
+                }
             }
+            bw.write("}");
+
             reader.close();
             bw.close();
 //===
