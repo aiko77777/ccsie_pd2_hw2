@@ -61,6 +61,7 @@ public class CodeGenerator{
             return;
         }
         
+         
         
         try {
             ////files operation
@@ -69,8 +70,16 @@ public class CodeGenerator{
             Method_Maker method_maker= new Method_Maker();
             BufferedReader reader = new BufferedReader(new FileReader(args[0]));
             ArrayList<String> string_List=new ArrayList<String>(); 
+            ArrayList<String> write_section=new ArrayList<String>();
+            // for(int gg=2;gg<lines.length;gg++){
+            //     String[] read_Line;
+            //     read_Line=lines[gg].split("\n");
+            //     for(int ff=0;ff<read_Line.length;ff++){
+            //         string_List.add(read_Line[ff]);
+            //     }
+            // }
 
-            String read_Line;
+           String read_Line;
             while((read_Line=reader.readLine())!=null){
                 // bw.write(read_Line);
                 // bw.write("\n");
@@ -79,68 +88,97 @@ public class CodeGenerator{
                 
             }
             
-            String output = string_List.get(1).substring(string_List.get(1).indexOf("class")+5+1,string_List.get(1).length())+".java";//find the position of class and then add the length of "class" and one <space> 
-            File file = new File(output);
             //create the file
-            if (!file.exists()) {
-            file.createNewFile();                    
-            }
+            
 
             //String content = mermaidCode;
             
-            ////writing in the content
-            BufferedWriter bw = new BufferedWriter(new FileWriter(file));   //newing object cannot be in the loop!!
+            
 
 //===
             string_List.remove("classDiagram");
 
-            for(int i=0;i<string_List.size();i++){
-                
-                if (string_List.get(i).contains("class")){
-                    String class_line=class_maker.class_In_Lines(string_List.get(i));
-                    bw.write(class_line);
-                    bw.write("\n");
-                    System.out.println("there is a class");
-                }
-                else if(string_List.get(i).contains("(")){ //find method first and then variables,buz they are almost same
-                    String method_line=method_maker.method_In_Lines(string_List.get(i));
-                    bw.write(method_line);
-                    bw.write("\n");
-                    if (string_List.get(i).contains("get")){
-                        int position_Of_Get=string_List.get(i).indexOf("get");
-                        String get_value=string_List.get(i).substring(position_Of_Get+3,string_List.get(i).indexOf("("));
-                        bw.write("      return "+get_value.toLowerCase()+";");
-                        bw.write("\n");
-                        bw.write("  }");//finish the left part of method(the return value )
-                        bw.write("\n"); 
-                    }
-                    else if(string_List.get(i).contains("set")){
-                        int position_Of_set=string_List.get(i).indexOf("set");
-                        String set_value=string_List.get(i).substring(position_Of_set+3,string_List.get(i).indexOf("("));
-                        bw.write("      this."+set_value.toLowerCase()+" = "+set_value.toLowerCase()+";");
-                        bw.write("\n");
-                        bw.write("  }");//finish the left part of method(the set value )
-                        bw.write("\n"); 
-
-                    }
-                    System.out.println("there is a method");
-                }
-                else if(string_List.get(i).equals("")){
-                    continue;
-                }
-                else{//except for class and methods,(e.g.variable,array),deal with the same way.
-                    String variable_line=variable_maker.variable_In_Lines(string_List.get(i));
-                    bw.write(variable_line);
-                    bw.write("\n");
-                    System.out.println("there is a variable");
+            int class_num=0;
+            int class_count=0;
+            ArrayList<Integer> class_row=new ArrayList<Integer>();
+            for(int s=0;s<string_List.size();s++){
+                if (string_List.get(s).contains("class")){ //the number of class
+                    class_num++;
+                    class_row.add(s);
                 }
             }
-            bw.write("}");
+            for(int init=0;init<class_num;init++){
+                for(int i=class_row.get(init);i<string_List.size();i++){
+                    if(string_List.get(i).contains("class") && class_count>0){
+                        class_count=0;
+                        break;
+                    }
+                    if (string_List.get(i).contains("class")){
+                        class_count++;
+                        String class_line=class_maker.class_In_Lines(string_List.get(i));
+                        write_section.add(class_line);
+                        write_section.add("\n");
+                        System.out.println("there is a class");
+                    }
+                    else if(string_List.get(i).contains("(")){ //find method first and then variables,buz they are almost same
+                        String method_line=method_maker.method_In_Lines(string_List.get(i));
+                        write_section.add(method_line);
+                        write_section.add("\n");
+                        if (string_List.get(i).contains("get")){
+                            int position_Of_Get=string_List.get(i).indexOf("get");
+                            String get_value=string_List.get(i).substring(position_Of_Get+3,string_List.get(i).indexOf("("));
+                            write_section.add("      return "+get_value.toLowerCase()+";");
+                            write_section.add("\n");
+                            write_section.add("  }");//finish the left part of method(the return value )
+                            write_section.add("\n"); 
+                        }
+                        else if(string_List.get(i).contains("set")){
+                            int position_Of_set=string_List.get(i).indexOf("set");
+                            String set_value=string_List.get(i).substring(position_Of_set+3,string_List.get(i).indexOf("("));
+                            write_section.add("      this."+set_value.toLowerCase()+" = "+set_value.toLowerCase()+";");
+                            write_section.add("\n");
+                            write_section.add("  }");//finish the left part of method(the set value )
+                            write_section.add("\n"); 
+    
+                        }
+                        System.out.println("there is a method");
+                    }
+                    else if(string_List.get(i).equals("")){
+                        continue;
+                    }
+                    else{//except for class and methods,(e.g.variable,array),deal with the same way.
+                        String variable_line=variable_maker.variable_In_Lines(string_List.get(i));
+                        write_section.add(variable_line);
+                        write_section.add("\n");
+                        System.out.println("there is a variable");
+                    }
+                }
+                write_section.add("}");
+                
+                //create file
+                String output = string_List.get(class_row.get(init)).substring(string_List.get(class_row.get(init)).indexOf("class")+5+1,string_List.get(class_row.get(init)).length())+".java";//find the position of class and then add the length of "class" and one <space> 
+                File file = new File(output);
+                if (!file.exists()) {
+                    file.createNewFile();                    
+                    }
+                //write in
+                ////writing in the content
+                BufferedWriter bw = new BufferedWriter(new FileWriter(file));   //newing object cannot be in the loop!!
+                for(int w=0;w<write_section.size();w++){
+                    bw.write(write_section.get(w));
+                    System.out.println(w+write_section.get(w));
+                }
+                bw.flush();
+                bw.close();
+                write_section.clear();
+                System.out.println("============================");
+            }
+            
 
             reader.close();
-            bw.close();
+            //bw.close();
 //===
-            System.out.println("Java class has been generated: " + output);
+            //System.out.println("Java class has been generated: " + output);
         } catch (IOException e) {
             e.printStackTrace();
         }
