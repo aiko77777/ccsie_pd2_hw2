@@ -19,12 +19,13 @@ class Class_Maker{
 }
 class Variable_Maker{
     String variable_In_Lines(String input_Line){
-        int semi_Positon=input_Line.indexOf(":");
+        int plus_Position=input_Line.indexOf("+");
+        int minus_Position=input_Line.indexOf("-");
         if (input_Line.contains("+")){
-            return "    public "+input_Line.substring(semi_Positon+2+1,input_Line.length())+";";// +2==(-or+)
+            return "    public "+input_Line.substring(plus_Position+1,input_Line.length())+";";// +2==(-or+)
         }
         else{
-            return "    private "+input_Line.substring(semi_Positon+2+1,input_Line.length())+";";// +2==(-or+)
+            return "    private "+input_Line.substring(minus_Position+1,input_Line.length())+";";// +2==(-or+)
         }
     }
 }
@@ -123,24 +124,43 @@ public class CodeGenerator{
                     else if(string_List.get(i).contains("(")){ //find method first and then variables,buz they are almost same
                         String method_line=method_maker.method_In_Lines(string_List.get(i));
                         write_section.add(method_line);
-                        write_section.add("\n");
+                        //write_section.add("\n");
                         if (string_List.get(i).contains("get")){
                             int position_Of_Get=string_List.get(i).indexOf("get");
                             String get_value=string_List.get(i).substring(position_Of_Get+3,string_List.get(i).indexOf("("));
-                            write_section.add("      return "+get_value.toLowerCase()+";");
                             write_section.add("\n");
-                            write_section.add("  }");//finish the left part of method(the return value )
+                            write_section.add("        return "+get_value.toLowerCase()+";");
+                            write_section.add("\n");
+                            write_section.add("    }");//finish the left part of method(the return value )
                             write_section.add("\n"); 
                         }
                         else if(string_List.get(i).contains("set")){
                             int position_Of_set=string_List.get(i).indexOf("set");
                             String set_value=string_List.get(i).substring(position_Of_set+3,string_List.get(i).indexOf("("));
-                            write_section.add("      this."+set_value.toLowerCase()+" = "+set_value.toLowerCase()+";");
                             write_section.add("\n");
-                            write_section.add("  }");//finish the left part of method(the set value )
+                            write_section.add("        this."+set_value.toLowerCase()+" = "+set_value.toLowerCase()+";");
+                            write_section.add("\n");
+                            write_section.add("    }");//finish the left part of method(the set value )
                             write_section.add("\n"); 
     
                         }
+                        else if(string_List.get(i).contains("boolean")){
+                            write_section.add("return false;}");
+                            write_section.add("\n");
+                            //write_section.set(write_section.size()-1,write_section.get(write_section.size()-1)+("return flase;}"));
+                        }
+                        else if(string_List.get(i).contains("void")){
+                            write_section.add(";}");
+                            write_section.add("\n");
+                        }
+                        
+                        else if(string_List.get(i).contains("int")){
+                            write_section.add("return 0;}");
+                            write_section.add("\n");
+
+                            //write_section.set(write_section.size()-1,write_section.get(write_section.size()-1)+("return 0;}"));
+                        }
+                        
                         System.out.println("there is a method");
                     }
                     else if(string_List.get(i).equals("")){
