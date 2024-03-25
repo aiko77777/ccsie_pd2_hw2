@@ -22,22 +22,23 @@ class Variable_Maker{
         int plus_Position=input_Line.indexOf("+");
         int minus_Position=input_Line.indexOf("-");
         if (input_Line.contains("+")){
-            return "    public "+input_Line.substring(plus_Position+1,input_Line.length())+";";// +2==(-or+)
+            return "    public "+input_Line.substring(plus_Position+1,input_Line.length()).trim()+";";// +2==(-or+)
         }
         else{
-            return "    private "+input_Line.substring(minus_Position+1,input_Line.length())+";";// +2==(-or+)
+            return "    private "+input_Line.substring(minus_Position+1,input_Line.length()).trim()+";";// +2==(-or+)
         }
     }
 }
 class Method_Maker{
     String method_In_Lines(String input_Line){
         int right_parantheses_positon=input_Line.indexOf(')');
-        int semi_Positon=input_Line.indexOf(":");
+        int plus_Position=input_Line.indexOf("+");
+        int minus_Position=input_Line.indexOf("-");
         if (input_Line.contains("+")){ //change to contains??
-            return "    public "+input_Line.substring(right_parantheses_positon+2,input_Line.length())+" "+input_Line.substring(semi_Positon+3,right_parantheses_positon+1)+" {"; //fix later
+            return "    public "+input_Line.substring(right_parantheses_positon+1,input_Line.length()).replace(" ","")+" "+input_Line.substring(plus_Position+1,right_parantheses_positon+1)+" {"; //fix later
         }
         else{
-            return "    private "+input_Line.substring(right_parantheses_positon+2,input_Line.length())+" "+input_Line.substring(semi_Positon+3,right_parantheses_positon+1)+" {";
+            return "    private "+input_Line.substring(right_parantheses_positon+1,input_Line.length()).replace(" ","")+" "+input_Line.substring(minus_Position+1,right_parantheses_positon+1)+" {";
         }
         
     }
@@ -163,7 +164,7 @@ public class CodeGenerator{
                         
                         System.out.println("there is a method");
                     }
-                    else if(string_List.get(i).equals("")){
+                    else if(string_List.get(i).replace(" ","").equals("")){
                         continue;
                     }
                     else{//except for class and methods,(e.g.variable,array),deal with the same way.
@@ -191,10 +192,8 @@ public class CodeGenerator{
                 bw.flush();
                 bw.close();
                 write_section.clear();
-                System.out.println("============================");
             }
             
-
             reader.close();
             //bw.close();
 //===
