@@ -19,26 +19,37 @@ class Class_Maker{
 }
 class Variable_Maker{
     String variable_In_Lines(String input_Line){
+        
         int plus_Position=input_Line.indexOf("+");
         int minus_Position=input_Line.indexOf("-");
+        String input_Line2;
         if (input_Line.contains("+")){
-            return "    public "+input_Line.substring(plus_Position+1,input_Line.length()).trim()+";";// +2==(-or+)
+            input_Line2=input_Line.substring(plus_Position+1,input_Line.length()).trim();
+            System.out.println("/////////////////////////"+input_Line2);
+            int plus_Position2=input_Line2.indexOf("+");
+            int space_Position=input_Line2.indexOf(" ");
+            return "    public "+input_Line2.substring(plus_Position2+1,space_Position).trim()+" "+input_Line2.substring(space_Position,input_Line2.length()).trim()+";";
         }
         else{
-            return "    private "+input_Line.substring(minus_Position+1,input_Line.length()).trim()+";";// +2==(-or+)
+            input_Line2=input_Line.substring(minus_Position+1,input_Line.length()).trim();
+            System.out.println("/////////////////////////"+input_Line2);
+            int minus_Position2=input_Line2.indexOf("-");
+            int space_Position=input_Line2.indexOf(" ");
+            return "    private "+input_Line2.substring(minus_Position2+1,space_Position).trim()+" "+input_Line2.substring(space_Position,input_Line2.length()).trim()+";";
         }
     }
 }
 class Method_Maker{
     String method_In_Lines(String input_Line){
         int right_parantheses_positon=input_Line.indexOf(')');
+        int left_parantheses_position=input_Line.indexOf('(');
         int plus_Position=input_Line.indexOf("+");
         int minus_Position=input_Line.indexOf("-");
-        if (input_Line.contains("+")){ //change to contains??
-            return "    public "+input_Line.substring(right_parantheses_positon+1,input_Line.length()).replace(" ","")+" "+input_Line.substring(plus_Position+1,right_parantheses_positon+1)+" {"; //fix later
+        if (input_Line.contains("+")){
+            return "    public "+input_Line.substring(right_parantheses_positon+1,input_Line.length()).replace(" ","")+" "+input_Line.substring(plus_Position+1,left_parantheses_position).trim()+input_Line.substring(left_parantheses_position,right_parantheses_positon+1)+" {"; //fix later
         }
         else{
-            return "    private "+input_Line.substring(right_parantheses_positon+1,input_Line.length()).replace(" ","")+" "+input_Line.substring(minus_Position+1,right_parantheses_positon+1)+" {";
+            return "    private "+input_Line.substring(right_parantheses_positon+1,input_Line.length()).replace(" ","")+" "+input_Line.substring(minus_Position+1,left_parantheses_position).trim()+input_Line.substring(left_parantheses_position,right_parantheses_positon+1)+" {";
         }
         
     }
